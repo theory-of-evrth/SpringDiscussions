@@ -6,6 +6,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class DicussionsProjectApplication {
 
+	private static void fillWithTestData(){
+		
+	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(DicussionsProjectApplication.class, args);
 	}
