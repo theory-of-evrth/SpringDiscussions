@@ -1,43 +1,13 @@
 package com.keschubay.discussions.service;
 
-import com.keschubay.discussions.model.Comment;
 import com.keschubay.discussions.model.Discussion;
-import com.keschubay.discussions.repository.CommentRepository;
-import com.keschubay.discussions.repository.DiscussionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
-@Service
-public class DiscussionService {
-    @Autowired
-    private DiscussionRepository discussionRepository;
-    @Autowired
-    private CommentRepository commentRepository;
+import java.util.List;
 
-    public Page<Discussion> getDiscussionsByCategory(Long categoryId, Pageable pageable) {
-        return discussionRepository.findByCategoryId(categoryId, pageable);
-    }
-
-    public Discussion createDiscussion(Discussion discussion) {
-        return discussionRepository.save(discussion);
-    }
-
-    // TODO
-    @PostMapping("/{discussionId}/comments")
-    public Comment addComment(@PathVariable Long discussionId, @RequestBody Comment comment) {
-        Discussion discussion = discussionRepository.findById(discussionId)
-                .orElseThrow(() -> new RuntimeException("Discussion not found"));
-        comment.setDiscussion(discussion);
-        //return commentRepository.save(comment);
-        return null;
-    }
-
-    // TODO delete
-
-    // TODO update
+public interface DiscussionService {
+    public Discussion createDiscussion(Discussion discussion);
+    public Discussion updateDiscussion(Discussion discussion);
+    public void deleteDiscussion(Discussion discussion);
+    public Discussion getDiscussion(int discussionId);
+    public List<Discussion> getAllDiscussions();
 }

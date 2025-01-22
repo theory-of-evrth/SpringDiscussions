@@ -2,9 +2,9 @@ package com.keschubay.discussions.controller;
 
 import com.keschubay.discussions.model.Discussion;
 import com.keschubay.discussions.service.DiscussionService;
+import com.keschubay.discussions.service.DiscussionServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,7 +19,8 @@ public class DiscussionController {
             @RequestParam int page,
             @RequestParam int size
     ) {
-        return discussionService.getDiscussionsByCategory(categoryId, PageRequest.of(page, size));
+        return null;
+        //return discussionService.getDiscussionsByCategory(categoryId, PageRequest.of(page, size));
     }
 
     @PostMapping

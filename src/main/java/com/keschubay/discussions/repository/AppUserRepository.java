@@ -1,9 +1,9 @@
 package com.keschubay.discussions.repository;
 
-import com.keschubay.discussions.model.Category;
+import com.keschubay.discussions.model.AppUser;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+public interface AppUserRepository extends JpaRepository<AppUser, Long> {
 }

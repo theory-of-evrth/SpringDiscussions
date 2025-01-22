@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.keschubay.discussions</groupId>
-	<artifactId>dicussions-project</artifactId>
+	<artifactId>discussions-project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>dicussions-project</name>
+	<name>discussions-project</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
 	<licenses>
