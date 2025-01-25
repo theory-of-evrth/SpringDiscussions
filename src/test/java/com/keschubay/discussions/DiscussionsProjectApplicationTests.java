@@ -2,6 +2,7 @@ package com.keschubay.discussions;
 
 import com.keschubay.discussions.model.AppUser;
 import com.keschubay.discussions.model.Category;
+import com.keschubay.discussions.model.Comment;
 import com.keschubay.discussions.model.Discussion;
 import com.keschubay.discussions.repository.DiscussionRepository;
 import com.keschubay.discussions.service.AppUserServiceImpl;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
 import java.util.Optional;
 
 import static graphql.Assert.*;
@@ -19,10 +21,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
 class DiscussionsProjectApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
 
 	@Autowired
 	private DiscussionServiceImpl discussionService;
@@ -52,7 +50,7 @@ class DiscussionsProjectApplicationTests {
 	void testReadByIdAndDeleteAppUser()
 	{
 		AppUser appUser = new AppUser();
-		appUser.setUsername("Test userr");
+		appUser.setUsername("Test userr2");
 
 		appUser.setRole("USER");
 
@@ -60,7 +58,7 @@ class DiscussionsProjectApplicationTests {
 
 		AppUser savedUser = appUserService.getUserById(createdUser.getId()).orElseThrow();
 		assertNotNull(savedUser.getId()); // validate user fetched on read by Id
-		assertEquals("Test userr", savedUser.getUsername());
+		assertEquals("Test userr2", savedUser.getUsername());
 
 		appUserService.deleteUser(savedUser);
 
@@ -106,8 +104,16 @@ class DiscussionsProjectApplicationTests {
 	void testEditCategory()
 	{
 		Category category = new Category();
-		// not implemented
-		assertTrue(false);
+
+		category.setName("Test category");
+		Category savedCategory = categoryService.createCategory(category);
+		savedCategory.setName("Testtt category");
+		Category editedCategory = categoryService.editCategory(savedCategory);
+
+		// the object is required to be null, because we are trying to edit the Category as an outsider here
+		// so in the editing it does not pass condition of either owning this object or being an Admin, and instead of returning edited object, returns null
+		// succesfull editing only tested via Postman, because of the Authentification
+		assertNull(editedCategory);
 	}
 
 	@Test
@@ -145,30 +151,163 @@ class DiscussionsProjectApplicationTests {
 		savedDiscussion.setTitle("Test Title 2");
 		savedDiscussion = discussionService.updateDiscussion(savedDiscussion);
 
-		assertNotNull(savedDiscussion.getId());
-		assertEquals("Test Title 2", savedDiscussion.getTitle());
+		// the object is required to be null, because we are trying to edit the Discussion as an outsider here
+		// so in the editing it does not pass condition of either owning this object or being an Admin, and instead of returning edited object, returns null
+		// succesfull editing only tested via Postman, because of the Authentification
+		assertNull(savedDiscussion);
 	}
 
 	@Test
 	void testReadByIdAndDeleteDiscussion() {
 		Discussion discussion = new Discussion();
+		discussion.setTitle("Test Title");
+		discussion.setContent("Test Content");
 
-		assertTrue(false);
+		Discussion savedDiscussion = discussionService.createDiscussion(discussion);
+
+		Optional<Discussion> fetchedDiscussion = discussionService.getDiscussion(savedDiscussion.getId());
+
+		assertFalse(fetchedDiscussion.isEmpty());
+		assertEquals(savedDiscussion.getTitle(), fetchedDiscussion.get().getTitle());
+
+		discussionService.deleteDiscussion(savedDiscussion);
+
+		Optional<Discussion> nonexistantDiscussion = discussionService.getDiscussion(savedDiscussion.getId());
+
+		assertTrue(nonexistantDiscussion.isEmpty());
 	}
 
 	@Test
-	void testAddCommentToDiscussion() {
-		assertTrue(false);
+	void testAddCommentToDiscussionThenDeleteComment() {
+		Discussion discussion = new Discussion();
+		discussion.setTitle("Summer camp");
+		discussion.setContent("Test Content");
+
+		AppUser user = new AppUser();
+		user.setUsername("Drake123");
+		user.setRole("USER");
+
+		AppUser savedUser = appUserService.createUser(user);
+
+		discussion.setCreatedBy(savedUser);
+
+		Discussion savedDiscussion = discussionService.createDiscussion(discussion);
+
+		Comment comment = new Comment();
+		comment.setDiscussion(discussion);
+		comment.setContent("Hi! Who can tell me about that one camp <link> ?");
+		comment.setCreatedBy(savedUser);
+
+		Comment addedComment = discussionService.addComment(savedDiscussion.getId(), comment);
+
+		assertNotNull(addedComment);
+		assertEquals(addedComment.getContent(), comment.getContent());
+
+		discussionService.deleteComment(addedComment.getId());
+
+		Optional<Comment> fetchedComment = discussionService.getComment(addedComment.getId());
+		assertTrue(fetchedComment.isEmpty());
 	}
 
 	@Test
-	void testDeleteCommentFromDiscussion() {
-		assertTrue(false);
+	void testGetAllDiscussionsByCategory()
+	{
+		AppUser user = new AppUser();
+		user.setUsername("Bob55");
+		user.setRole("ROLE_ADMIN");
+
+		AppUser savedUser = appUserService.createUser(user);
+
+		Category category = new Category();
+		category.setName("Digital Media");
+
+		Category savedCategory = categoryService.createCategory(category);
+
+		Discussion discussion1 = new Discussion();
+		Discussion discussion2 = new Discussion();
+		discussion1.setTitle("Movies");
+		discussion2.setTitle("Music");
+		discussion1.setCreatedBy(savedUser);
+		discussion2.setCreatedBy(savedUser);
+		discussion1.setContent("Let's discuss our favourite movies here");
+		discussion2.setContent("-");
+		discussion1.setCategory(savedCategory);
+		discussion2.setCategory(savedCategory);
+
+		Discussion saved1 = discussionService.createDiscussion(discussion1);
+		Discussion saved2 = discussionService.createDiscussion(discussion2);
+
+		List<Discussion> created = List.of(saved1, saved2);
+
+		List<Discussion> fetched = discussionService.getAllDiscussions(category.getId());
+
+		assertEquals(created.size(), fetched.size());
+		assertEquals(created.get(0), fetched.get(0));
+		assertEquals(created.get(1), fetched.get(1));
 	}
 
-	/*
 	@Test
-	void
+	void testGetAllCategories()
+	{
+		Category category1 = new Category();
+		category1.setName("Digital Media");
 
-	 */
+		Category savedCategory1 = categoryService.createCategory(category1);
+
+		Category category2 = new Category();
+		category2.setName("Natural Sciences");
+
+		Category savedCategory2 = categoryService.createCategory(category2);
+
+		List<Category> created = List.of(savedCategory1, savedCategory2);
+
+		List<Category> fetched = categoryService.getAllCategories();
+
+		assertEquals(created.size(), fetched.size());
+		assertEquals(created.get(0), fetched.get(0));
+		assertEquals(created.get(1), fetched.get(1));
+	}
+
+	@Test
+	void testGetAllCommentsOfDiscussion()
+	{
+		Discussion discussion = new Discussion();
+		discussion.setTitle("Test Title");
+		discussion.setContent("Test Content");
+
+		AppUser user = new AppUser();
+		user.setUsername("Alice");
+		user.setRole("USER");
+
+		Category category = new Category();
+		category.setName("Test category");
+
+		AppUser savedUser = appUserService.createUser(user);
+		Category savedCategory = categoryService.createCategory(category);
+
+		discussion.setCreatedBy(savedUser);
+		discussion.setCategory(savedCategory);
+
+		Discussion savedDiscussion = discussionService.createDiscussion(discussion);
+
+		Comment comment = new Comment();
+		comment.setDiscussion(discussion);
+		comment.setContent("Hi!");
+		comment.setCreatedBy(savedUser);
+
+		Comment addedComment = discussionService.addComment(savedDiscussion.getId(), comment);
+
+		assertNotNull(addedComment);
+		assertEquals(addedComment.getContent(), comment.getContent());
+
+		List<Comment> created = List.of(comment);
+
+		List<Comment> fetched = discussionService.getAllComments(savedDiscussion.getId());
+
+		assertEquals(created.size(), fetched.size());
+		assertEquals(created.get(0), fetched.get(0));
+		assertEquals(created.get(0).getContent(), fetched.get(0).getContent());
+	}
+
+
 }

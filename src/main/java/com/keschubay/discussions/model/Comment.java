@@ -13,11 +13,10 @@ public class Comment implements java.io.Serializable {
 
     private String content;
 
-    //@ManyToOne
-    //private User createdBy;
+    @ManyToOne
+    private AppUser createdBy;
 
     @ManyToOne
-    @MapsId
     private Discussion discussion;
 
     public void setDiscussion(Discussion discussion) {
@@ -31,5 +30,21 @@ public class Comment implements java.io.Serializable {
 
     public Long getId() {
         return id;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public AppUser getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(AppUser createdBy) {
+        this.createdBy = createdBy;
     }
 }

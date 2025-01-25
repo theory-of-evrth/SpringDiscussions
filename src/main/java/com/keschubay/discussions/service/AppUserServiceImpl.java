@@ -24,11 +24,11 @@ public class AppUserServiceImpl  implements AppUserService
 
     @Override
     public void deleteUser(AppUser appUser) {
-        repository.deleteById(appUser.getId());//.delete(appUser);
+        repository.deleteById(appUser.getId());
     }
 
     @Override
     public Optional<AppUser> getUserById(Long id) {
-        return repository.findById(id);//.getReferenceById(id);
+        return repository.findById(id);
     }
 }

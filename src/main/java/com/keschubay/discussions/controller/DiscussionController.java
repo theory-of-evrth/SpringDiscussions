@@ -21,7 +21,6 @@ public class DiscussionController {
 
     }
 
-    //@Auth
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/category/{categoryId}")
     public Page<Discussion> getDiscussionsByCategory(
