@@ -328,5 +328,5 @@ class DiscussionsProjectApplicationTests {
 		assertEquals(created.size(), fetched.size());
 		assertEquals(created.get(0).getContent(), fetched.get(0).getContent());
 	}
-	
+
 }

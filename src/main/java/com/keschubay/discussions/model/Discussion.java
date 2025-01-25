@@ -13,8 +13,7 @@ public class Discussion {
 
     private String content;
 
-    @ManyToOne
-    private AppUser createdBy;
+    private String createdBy;
 
     @ManyToOne
     private Category category;
@@ -45,12 +44,18 @@ public class Discussion {
         return this.title;
     }
 
+    public String getContent() { return this.content; }
 
-    public AppUser getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
+    public void setCreatedBy(String username)
+    {
+        this.createdBy = username;
+    }
+
     public void setCreatedBy(AppUser createdBy) {
-        this.createdBy = createdBy;
+        this.createdBy = createdBy.getUsername();
     }
 }

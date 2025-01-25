@@ -13,10 +13,9 @@ public class Comment implements java.io.Serializable {
 
     private String content;
 
-    @ManyToOne
-    private AppUser createdBy;
+    private String createdBy;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private Discussion discussion;
 
     public void setDiscussion(Discussion discussion) {
@@ -40,11 +39,15 @@ public class Comment implements java.io.Serializable {
         this.content = content;
     }
 
-    public AppUser getCreatedBy() {
+    public String getCreatedBy() {
         return createdBy;
     }
 
-    public void setCreatedBy(AppUser createdBy) {
+    public void setCreatedBy(AppUser appUser) {
+        this.createdBy = appUser.getUsername();
+    }
+
+    public void setCreatedBy(String createdBy) {
         this.createdBy = createdBy;
     }
 }

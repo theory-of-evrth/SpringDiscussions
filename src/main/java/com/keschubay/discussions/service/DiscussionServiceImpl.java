@@ -33,9 +33,18 @@ public class DiscussionServiceImpl implements DiscussionService {
     }
 
     public Discussion updateDiscussion(Discussion discussion) {
-        if (Objects.equals(discussion.getCreatedBy().getUsername(), CurrentUserUtil.getCurrentUsername()) )
+        if (Objects.equals(discussion.getCreatedBy(), CurrentUserUtil.getCurrentUsername()) )
         {
-            //discussionRepository.
+            Optional<Discussion> existingDiscussionOpt = discussionRepository.findById(discussion.getId());
+
+            if (existingDiscussionOpt.isPresent()) {
+                Discussion existingDiscussion = existingDiscussionOpt.get();
+
+                existingDiscussion.setTitle(discussion.getTitle());
+                existingDiscussion.setContent(discussion.getContent());
+
+                return discussionRepository.save(existingDiscussion);
+            }
         }
         return null;
     }
