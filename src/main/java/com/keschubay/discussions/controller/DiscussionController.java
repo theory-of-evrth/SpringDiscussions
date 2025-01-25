@@ -5,6 +5,8 @@ import com.keschubay.discussions.service.DiscussionService;
 import com.keschubay.discussions.service.DiscussionServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -13,6 +15,14 @@ public class DiscussionController {
     @Autowired
     private DiscussionService discussionService;
 
+    @PostMapping("/{discussionId}/comments")
+    public void addComment()
+    {
+
+    }
+
+    //@Auth
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/category/{categoryId}")
     public Page<Discussion> getDiscussionsByCategory(
             @PathVariable Long categoryId,

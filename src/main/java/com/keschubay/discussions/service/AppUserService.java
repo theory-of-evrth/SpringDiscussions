@@ -1,11 +1,11 @@
 package com.keschubay.discussions.service;
 
 import com.keschubay.discussions.model.AppUser;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Optional;
 
 public interface AppUserService {
-    // todo to create IDs
-
     public AppUser createUser(AppUser appUser);
-
+    public void deleteUser(AppUser appUser);
+    public Optional<AppUser> getUserById(Long id);
 }

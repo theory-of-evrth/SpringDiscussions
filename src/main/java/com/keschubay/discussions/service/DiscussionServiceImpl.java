@@ -8,11 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.Optional;
 
 
 @Service
@@ -39,12 +37,12 @@ public class DiscussionServiceImpl implements DiscussionService {
 
     @Override
     public void deleteDiscussion(Discussion discussion) {
-
+        discussionRepository.deleteById(discussion.getId());
     }
 
     @Override
-    public Discussion getDiscussion(int discussionId) {
-        return null;
+    public Optional<Discussion> getDiscussion(int discussionId) {
+        return discussionRepository.findById((long) discussionId);
     }
 
     @Override
@@ -53,8 +51,14 @@ public class DiscussionServiceImpl implements DiscussionService {
     }
 
     // TODO
-    @PostMapping("/{discussionId}/comments")
-    public Comment addComment(@PathVariable Long discussionId, @RequestBody Comment comment) {
+
+    public List<Comment> getAllComments()
+    {
+        return null;//commentRepository.getAllBy(discussionId);
+    }
+
+
+    public Comment addComment(Long discussionId, Comment comment) {
         Discussion discussion = discussionRepository.findById(discussionId)
                 .orElseThrow(() -> new RuntimeException("Discussion not found"));
         comment.setDiscussion(discussion);

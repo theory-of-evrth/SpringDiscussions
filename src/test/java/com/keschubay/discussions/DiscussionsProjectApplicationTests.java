@@ -12,7 +12,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static graphql.Assert.assertNotNull;
+import java.util.Optional;
+
+import static graphql.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest
@@ -38,11 +40,34 @@ class DiscussionsProjectApplicationTests {
 	void testCreateAppUser() {
 		AppUser appUser = new AppUser();
 		appUser.setUsername("Test userr");
+		appUser.setRole("USER");
 
 		AppUser savedUser = appUserService.createUser(appUser);
 
 		assertNotNull(savedUser.getId());
 		assertEquals("Test userr", savedUser.getUsername());
+	}
+
+	@Test
+	void testReadByIdAndDeleteAppUser()
+	{
+		AppUser appUser = new AppUser();
+		appUser.setUsername("Test userr");
+
+		appUser.setRole("USER");
+
+		AppUser createdUser = appUserService.createUser(appUser);
+
+		AppUser savedUser = appUserService.getUserById(createdUser.getId()).orElseThrow();
+		assertNotNull(savedUser.getId()); // validate user fetched on read by Id
+		assertEquals("Test userr", savedUser.getUsername());
+
+		appUserService.deleteUser(savedUser);
+
+		Optional<AppUser> fetchedUser = appUserService.getUserById(savedUser.getId());
+
+		assertTrue(fetchedUser.isEmpty());
+
 	}
 
 	@Test
@@ -58,6 +83,34 @@ class DiscussionsProjectApplicationTests {
 	}
 
 	@Test
+	void testReadByIdAndDeleteCategory()
+	{
+		Category category = new Category();
+		category.setName("Test category");
+
+		Category createdCategory = categoryService.createCategory(category);
+
+		Category savedCategory = categoryService.getCategoryById(createdCategory.getId()).orElseThrow();
+		assertNotNull(savedCategory.getId()); // validate user fetched on read by Id
+		assertEquals("Test category", savedCategory.getName());
+
+		// Now deleting the category we created and seeing if it still exists
+		categoryService.deleteCategory(savedCategory);
+
+		Optional<Category> fetchedCategory = categoryService.getCategoryById(createdCategory.getId());
+
+		assertTrue(fetchedCategory.isEmpty());
+	}
+
+	@Test
+	void testEditCategory()
+	{
+		Category category = new Category();
+		// not implemented
+		assertTrue(false);
+	}
+
+	@Test
 	void testCreateDiscussion() {
 		Discussion discussion = new Discussion();
 		discussion.setTitle("Test Title");
@@ -65,14 +118,16 @@ class DiscussionsProjectApplicationTests {
 
 		AppUser user = new AppUser();
 		user.setUsername("Alice");
+		user.setRole("USER");
 
 		Category category = new Category();
 		category.setName("Test category");
 
 		AppUser savedUser = appUserService.createUser(user);
+		Category savedCategory = categoryService.createCategory(category);
 
 		discussion.setCreatedBy(savedUser);
-		discussion.setCategory(category);
+		discussion.setCategory(savedCategory);
 
 		Discussion savedDiscussion = discussionService.createDiscussion(discussion);
 
@@ -93,4 +148,27 @@ class DiscussionsProjectApplicationTests {
 		assertNotNull(savedDiscussion.getId());
 		assertEquals("Test Title 2", savedDiscussion.getTitle());
 	}
+
+	@Test
+	void testReadByIdAndDeleteDiscussion() {
+		Discussion discussion = new Discussion();
+
+		assertTrue(false);
+	}
+
+	@Test
+	void testAddCommentToDiscussion() {
+		assertTrue(false);
+	}
+
+	@Test
+	void testDeleteCommentFromDiscussion() {
+		assertTrue(false);
+	}
+
+	/*
+	@Test
+	void
+
+	 */
 }

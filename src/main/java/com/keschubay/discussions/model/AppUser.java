@@ -4,16 +4,21 @@ import jakarta.persistence.*;
 
 @Entity
 public class AppUser {
-
-    // TODO: see if this model is really needed
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String username;
-    //private String role; // "USER" or "ADMIN"
+    private String role; // "USER" or "ADMIN"
+    private String password;
 
+    public AppUser() {}
+
+    public AppUser(String username, String password, String role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 
     public String getUsername() {
         return this.username;
@@ -29,6 +34,22 @@ public class AppUser {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 }
 

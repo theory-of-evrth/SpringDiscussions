@@ -14,11 +14,9 @@ public class Discussion {
     private String content;
 
     @ManyToOne
-    @MapsId
     private AppUser createdBy;
 
     @ManyToOne
-    @MapsId
     private Category category;
 
     //private Long category_id;
