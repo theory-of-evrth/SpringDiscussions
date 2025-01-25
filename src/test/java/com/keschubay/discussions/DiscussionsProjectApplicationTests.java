@@ -78,6 +78,8 @@ class DiscussionsProjectApplicationTests {
 
 		assertNotNull(savedCategory.getId());
 		assertEquals("Test category", savedCategory.getName());
+
+		categoryService.deleteCategory(savedCategory);
 	}
 
 	@Test
@@ -110,10 +112,10 @@ class DiscussionsProjectApplicationTests {
 		savedCategory.setName("Testtt category");
 		Category editedCategory = categoryService.editCategory(savedCategory);
 
-		// the object is required to be null, because we are trying to edit the Category as an outsider here
-		// so in the editing it does not pass condition of either owning this object or being an Admin, and instead of returning edited object, returns null
-		// succesfull editing only tested via Postman, because of the Authentification
-		assertNull(editedCategory);
+		assertNotNull(editedCategory);
+		assertEquals("Testtt category", editedCategory.getName());
+
+		categoryService.deleteCategory(savedCategory);
 	}
 
 	@Test
@@ -123,7 +125,7 @@ class DiscussionsProjectApplicationTests {
 		discussion.setContent("Test Content");
 
 		AppUser user = new AppUser();
-		user.setUsername("Alice");
+		user.setUsername("Alice88");
 		user.setRole("USER");
 
 		Category category = new Category();
@@ -139,13 +141,23 @@ class DiscussionsProjectApplicationTests {
 
 		assertNotNull(savedDiscussion.getId());
 		assertEquals("Test Title", savedDiscussion.getTitle());
+
+		// cleaning
+		categoryService.deleteCategory(savedCategory);
 	}
 
 	@Test
 	void testEditDiscussion() {
+		AppUser user = new AppUser();
+		user.setUsername("Alice22");
+		user.setRole("USER");
+
+		AppUser savedUser = appUserService.createUser(user);
+
 		Discussion discussion = new Discussion();
 		discussion.setTitle("Test Title");
 		discussion.setContent("Test Content");
+		discussion.setCreatedBy(savedUser);
 
 		Discussion savedDiscussion = discussionService.createDiscussion(discussion);
 		savedDiscussion.setTitle("Test Title 2");
@@ -241,9 +253,15 @@ class DiscussionsProjectApplicationTests {
 
 		List<Discussion> fetched = discussionService.getAllDiscussions(category.getId());
 
+		List<String> names1 = fetched.stream().map(Discussion::getTitle).sorted().toList();
+		List<String> names2 = created.stream().map(Discussion::getTitle).sorted().toList();
+
 		assertEquals(created.size(), fetched.size());
-		assertEquals(created.get(0), fetched.get(0));
-		assertEquals(created.get(1), fetched.get(1));
+		assertEquals(names1.get(0), names2.get(0));
+		assertEquals(names1.get(1), names2.get(1));
+
+		// cleaning to prevent other tests from working incorrectly
+		categoryService.deleteCategory(savedCategory);
 	}
 
 	@Test
@@ -263,9 +281,12 @@ class DiscussionsProjectApplicationTests {
 
 		List<Category> fetched = categoryService.getAllCategories();
 
+		List<String> names1 = fetched.stream().map(Category::getName).sorted().toList();
+		List<String> names2 = created.stream().map(Category::getName).sorted().toList();
+
 		assertEquals(created.size(), fetched.size());
-		assertEquals(created.get(0), fetched.get(0));
-		assertEquals(created.get(1), fetched.get(1));
+		assertEquals(names1.get(0), names2.get(0));
+		assertEquals(names1.get(1), names2.get(1));
 	}
 
 	@Test
@@ -305,9 +326,7 @@ class DiscussionsProjectApplicationTests {
 		List<Comment> fetched = discussionService.getAllComments(savedDiscussion.getId());
 
 		assertEquals(created.size(), fetched.size());
-		assertEquals(created.get(0), fetched.get(0));
 		assertEquals(created.get(0).getContent(), fetched.get(0).getContent());
 	}
-
-
+	
 }

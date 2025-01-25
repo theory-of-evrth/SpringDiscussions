@@ -1,15 +1,13 @@
 package com.keschubay.discussions.service;
 
 import com.keschubay.discussions.CurrentUserUtil;
-import com.keschubay.discussions.model.Category;
 import com.keschubay.discussions.model.Comment;
 import com.keschubay.discussions.model.Discussion;
 import com.keschubay.discussions.repository.AppUserRepository;
+import com.keschubay.discussions.repository.CategoryRepository;
 import com.keschubay.discussions.repository.CommentRepository;
 import com.keschubay.discussions.repository.DiscussionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,10 +24,8 @@ public class DiscussionServiceImpl implements DiscussionService {
 
     @Autowired
     private CommentRepository commentRepository;
-
-    public Page<Discussion> getDiscussionsByCategory(Long categoryId, Pageable pageable) {
-        return null;//return discussionRepository.findByCategoryId(categoryId, pageable);
-    }
+    @Autowired
+    private CategoryRepository categoryRepository;
 
 
     public Discussion createDiscussion(Discussion discussion) {
@@ -56,36 +52,26 @@ public class DiscussionServiceImpl implements DiscussionService {
 
     @Override
     public List<Discussion> getAllDiscussions(Long categoryId) {
-        return List.of();
+        return discussionRepository.findAllByCategory(categoryRepository.findById(categoryId).get());
     }
-
-    // TODO
 
     public List<Comment> getAllComments(Long dicussionId)
     {
-        return null;//commentRepository.getAllBy(discussionId);
+        return commentRepository.findAllByDiscussion(discussionRepository.findById(dicussionId).get());
     }
 
 
     public Comment addComment(Long discussionId, Comment comment) {
-        Discussion discussion = discussionRepository.findById(discussionId)
-                .orElseThrow(() -> new RuntimeException("Discussion not found"));
-        comment.setDiscussion(discussion);
-        //return commentRepository.save(comment);
-        return null;
+        return commentRepository.save(comment);
     }
 
     @Override
     public void deleteComment(Long commentId) {
-
+        commentRepository.deleteById(commentId);
     }
 
     @Override
     public Optional<Comment> getComment(Long commentId) {
         return commentRepository.findById(commentId);
     }
-
-    // TODO delete
-
-    // TODO update
 }

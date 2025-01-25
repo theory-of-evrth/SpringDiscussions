@@ -22,7 +22,16 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public Category editCategory(Category category) {
-        return null;
+        Optional<Category> existingCategory = repository.findById(category.getId());
+
+        if (existingCategory.isPresent()) {
+            Category updatedCategory = existingCategory.get();
+            updatedCategory.setName(category.getName());
+
+            return repository.save(updatedCategory);
+        } else {
+            throw new IllegalArgumentException("Category with ID " + category.getId() + " not found. Try creating it first");
+        }
     }
 
     @Override
@@ -37,6 +46,6 @@ public class CategoryServiceImpl implements CategoryService{
 
     @Override
     public List<Category> getAllCategories() {
-        return List.of();
+        return repository.findAll();
     }
 }
