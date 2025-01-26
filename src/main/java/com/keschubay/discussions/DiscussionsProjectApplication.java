@@ -10,10 +10,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableJpaRepositories(basePackages = "com.keschubay.discussions.repository")
 public class DiscussionsProjectApplication {
 
-	private static void fillWithTestData(){
-		
-	}
-
 	public static void main(String[] args) {
 		SpringApplication.run(DiscussionsProjectApplication.class, args);
 	}

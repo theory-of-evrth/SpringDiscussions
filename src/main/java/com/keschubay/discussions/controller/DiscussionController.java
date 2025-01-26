@@ -72,7 +72,8 @@ public class DiscussionController {
         return discussion.map(value -> ResponseEntity.ok(toPage(commentRepository.findAllByDiscussion(value), pageable))).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
-    @DeleteMapping("/{discussionId}/comments/{commentId}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping("/{commentId}")
     public ResponseEntity<Comment> deleteComment(@PathVariable Long commentId, @PathVariable String discussionId){
         Optional<Comment> comment = commentRepository.findById(commentId);
         if (comment.isPresent()) {
@@ -112,6 +113,7 @@ public class DiscussionController {
         return discussion.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{discussionId}")
     public ResponseEntity<Discussion> deleteDiscussion(@PathVariable Long discussionId) {
         Optional<Discussion> discussion = discussionService.getDiscussion(discussionId);
